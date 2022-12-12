@@ -27,6 +27,7 @@ def buscaParenteses(expressao):
 #Função para identificar os números envolvidos na operação, pegando a partir do indice do simbolo da operação
 def identificaNumerais(expressao, indice_caractere):
     OPERACOES = re.compile('(((raiz)|([\^*\/+\-])))')
+    #TENTAR CONSTRUIR UMA ESTRATÉGIA QUE PERMITE PEGAR O SINAL NEGATIVO SE APÓS DELE NÃO VIER UM NÚMERO. CONVERTENDO ESSE NÚMERO PARA -NUMERO EXEMPLO 55, -55.
     INICIO = ''
     FIM = ''
     for caractere in range(indice_caractere-1, -1, -1):
@@ -116,8 +117,9 @@ def Master(expressao):
             parenteses = False
     print('fim')
 
-entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
+#entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
 #Falta lidar com esse exemplo: O que fazer quando temos um simbolo de operação seguido de um número negativo: exemplo 2/-3
-#entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))" 
+#entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
+entrada = '(-136+15)'
 entrada = entrada.replace(' ', '')
 Master(entrada)

@@ -27,6 +27,7 @@ def buscaParenteses(expressao):
 #Função para identificar os números envolvidos na operação, pegando a partir do indice do simbolo da operação
 def identificaNumerais(expressao, indice_caractere):
     OPERACOES = re.compile('(((raiz)|([\^*\/+\-])))')
+    NUMERO = re.compile('(\-?[0-9]{1,}(\.)?([0-9]{0,}))')
     #TENTAR CONSTRUIR UMA ESTRATÉGIA QUE PERMITE PEGAR O SINAL NEGATIVO SE APÓS DELE NÃO VIER UM NÚMERO. CONVERTENDO ESSE NÚMERO PARA -NUMERO EXEMPLO 55, -55.
     INICIO = ''
     FIM = ''

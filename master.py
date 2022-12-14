@@ -66,7 +66,7 @@ def identificaNumerais(expressao, indice_caractere):
 #Função para verificar se ainda existe uma operação a ser resolvida na expressão.
 def temOperacao(expressao_testada):
     #Regex que identifica numeros e operações (se existir uma operação obrigatoriamente deve existir numeros ao redor dela).
-    OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})(((raiz)|([\^*\/+\-])))[0-9](\.)?([0-9]{0,}))')
+    OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})((([\^*\/+\-])))[0-9](\.)?([0-9]{0,})|(raiz[0-9](\.)?([0-9]{0,})))')
     busca_operacoes = re.search(OPERACOES, expressao_testada)
     return busca_operacoes
 
@@ -87,8 +87,9 @@ def identificaOperacao(inicio_parenteses, fim_parenteses, expressao):
 
                 #Se for raiz
                 elif operacao == 'raiz':
-                    resultado = raiz(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado
+                    print('kkk')
+                    resultado = raiz(SEGUNDO_NUMERO)
+                    return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado
 
                 #Se for multiplicação
                 elif operacao == '*':
@@ -150,7 +151,7 @@ def Master(expressao):
     #Enquanto a expressao não estiver resolvida.
     while(resolvida == False):
         #Verifica se existe operação
-        if temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
+        if temOperacao(expressao) != None:
             #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
             EXPRESSAO_RESOLVIDA, RESULTADO = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
             #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
@@ -164,6 +165,7 @@ def Master(expressao):
 #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
 #entrada = '(-136+15)'
 #entrada = '((-27+2)-4)'
-entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
+#entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
+entrada = 'raiz5'
 entrada = entrada.replace(' ', '')
 Master(entrada)

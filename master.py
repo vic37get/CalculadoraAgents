@@ -28,18 +28,25 @@ def buscaParenteses(expressao):
 def identificaNumerais(expressao, indice_caractere):
     OPERACOES = re.compile('(((raiz)|([\^*\/+\-])))')
     NUMERO = re.compile('(\-?[0-9]{1,}(\.)?([0-9]{0,}))')
-    #TENTAR CONSTRUIR UMA ESTRATÉGIA QUE PERMITE PEGAR O SINAL NEGATIVO SE APÓS DELE NÃO VIER UM NÚMERO. CONVERTENDO ESSE NÚMERO PARA -NUMERO EXEMPLO 55, -55.
     INICIO = ''
     FIM = ''
+
+    #Buscando o número que fica antes do sinal da operação, ou seja, o primeiro número da operação.
     for caractere in range(indice_caractere-1, -1, -1):
         if re.search(OPERACOES, expressao[caractere]) == None:
             if expressao[caractere] != '(':
                 INICIO = str(expressao[caractere]) + INICIO
+                print(INICIO)
             else:
                 continue
         else:
+            if expressao[caractere] == '-':
+                busca = expressao[:caractere]
+                if re.search(NUMERO, busca) == None:
+                    INICIO = str(expressao[caractere]) + INICIO
             break
 
+    #Buscando o número que fica depois do sinal da operação, ou seja, o segundo número da operação.
     for caractere in range(indice_caractere+1, len(expressao)):
         if re.search(OPERACOES, expressao[caractere]) == None:
             if expressao[caractere] != ')':
@@ -48,11 +55,13 @@ def identificaNumerais(expressao, indice_caractere):
                 continue
         else:
             break
-    #Condição em que se tem um número negativo mais á esquerda
+    #Condição em que se verifica se tem um número negativo mais á esquerda, se não tiver é null.
     if INICIO == '':
         return None, FIM
+
     return INICIO, FIM
 
+#Função para verificar se ainda existe uma operação a ser resolvida na expressão.
 def temOperacao(expressao_testada):
     OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})(((raiz)|([\^*\/+\-])))[0-9](\.)?([0-9]{0,}))')
     busca_operacoes = re.search(OPERACOES, expressao_testada)
@@ -67,7 +76,7 @@ def identificaOperacao(inicio_parenteses, fim_parenteses, expressao):
             if caractere == operacao:
                 INICIO, FIM = identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
                 if INICIO == None:
-                    return '{}{}'.format(FIM, operacao), FIM
+                    continue
                 if operacao == '^':
                     resultado = exponenciacao(INICIO, FIM)
                     return '{}{}{}'.format(INICIO, operacao, FIM), resultado
@@ -102,8 +111,8 @@ def removeParenteses(expressao):
 #Função que é o mestre, começa buscando as expressões entre parênteses. (precedencia)
 def Master(expressao):
     parenteses = True
+    resolvida = False
     while parenteses == True:
-        #print('\n')
         print(expressao)
         inicio_parenteses, fim_parenteses = buscaParenteses(expressao)
         if inicio_parenteses != None or fim_parenteses != None:
@@ -116,11 +125,19 @@ def Master(expressao):
                 expressao = expressao.replace(expressao[inicio_parenteses:fim_parenteses], exp_sem_parenteses)
         else:
             parenteses = False
-    print('fim')
+    
+    while(resolvida == False):
+        if temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
+                EXPRESSAO_RESOLVIDA, RESULTADO = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
+                expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), str(RESULTADO))
+        else:
+            resolvida = True
+
 
 #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-#Falta lidar com esse exemplo: O que fazer quando temos um simbolo de operação seguido de um número negativo: exemplo 2/-3
 #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
-entrada = '(-136+15)'
+#entrada = '(-136+15)'
+#entrada = '((-27+2)-4)'
+entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
 entrada = entrada.replace(' ', '')
 Master(entrada)

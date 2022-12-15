@@ -45,7 +45,7 @@ def exponenciacao(num1, num2):
 
 def raiz(num1):
     #print('Realizando a operação de raiz entre os números {} e {} ({} ^ {})'.format(num1, num2))
-    print('Realizando a operação de raiz do número {}'.format(num1))
+    print('Realizando a operação de raiz quadrada do número {}'.format(num1))
     try:
         resultado = int(num1)**1/2
     except ValueError:

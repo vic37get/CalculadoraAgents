@@ -28,7 +28,7 @@ def buscaParenteses(expressao):
 #Função para identificar os números envolvidos na operação, pegando a partir do indice do simbolo da operação
 def identificaNumerais(expressao, indice_caractere):
     #regex para identificar operações matemáticas
-    OPERACOES = re.compile('(((raiz)|([\^*\/+\-])))')
+    OPERACOES = re.compile('(((r)|([\^*\/+\-])))')
     #regex para identificar numeros, sejam inteiros ou decimais.
     NUMERO = re.compile('(\-?[0-9]{1,}(\.)?([0-9]{0,}))')
 
@@ -43,9 +43,7 @@ def identificaNumerais(expressao, indice_caractere):
                 continue
         else:
             if expressao[caractere] == '-':
-                busca = expressao[:caractere]
-                if re.search(NUMERO, busca) == None:
-                    PRIMEIRO_NUMERO = str(expressao[caractere]) + PRIMEIRO_NUMERO
+                PRIMEIRO_NUMERO = str(expressao[caractere]) + PRIMEIRO_NUMERO
             break
 
     #Buscando o número que fica depois do sinal da operação, ou seja, o segundo número da operação.
@@ -66,27 +64,32 @@ def identificaNumerais(expressao, indice_caractere):
 #Função para verificar se ainda existe uma operação a ser resolvida na expressão.
 def temOperacao(expressao_testada):
     #Regex que identifica numeros e operações (se existir uma operação obrigatoriamente deve existir numeros ao redor dela).
-    OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})((([\^*\/+\-])))[0-9](\.)?([0-9]{0,})|(raiz[0-9](\.)?([0-9]{0,})))')
+    OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})((([\^*\/+\-])))[0-9](\.)?([0-9]{0,})|(r[0-9](\.)?([0-9]{0,})))')
     busca_operacoes = re.search(OPERACOES, expressao_testada)
     return busca_operacoes
 
 #Função para identificar a operação a ser realizada.
 def identificaOperacao(inicio_parenteses, fim_parenteses, expressao):
-    lista_operacoes = ['^', 'raiz', '*', '/', '+', '-']
+    lista_operacoes = ['^', 'r', '*', '/', '+', '-']
+    NUMERO = re.compile('(\-?[0-9]{1,}(\.)?([0-9]{0,}))')
+    
     for operacao in lista_operacoes:
         for indice, caractere in enumerate(expressao[inicio_parenteses:fim_parenteses]):
             if caractere == operacao:
                 PRIMEIRO_NUMERO, SEGUNDO_NUMERO = identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
+                print(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                 #Se o primeiro numero é None, quer dizer que se trata de um número negativo (Por exemplo: -125, a operação é -, mas o primeiro numero é None.)
-                if PRIMEIRO_NUMERO == None:
+                if PRIMEIRO_NUMERO == None and operacao == '-':
                     continue
                 #Se for exponenciação
                 if operacao == '^':
                     resultado = exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                    if resultado > 0 and caractere[indice-1] != : ##CONTINUAR AQUI PARA VER SE NAO TEM CARACTERE DEPOIS DESSE, CASO NAO TENHA ADICIONA UM +
+                        resultado = '+{}'.format(resultado)
                     return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado
 
                 #Se for raiz
-                elif operacao == 'raiz':
+                elif operacao == 'r':
                     print('kkk')
                     resultado = raiz(SEGUNDO_NUMERO)
                     return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado
@@ -127,7 +130,6 @@ def Master(expressao):
     resolvida = False
     
     while parenteses == True:
-        print(expressao)
         #Encontra os parenteses
         inicio_parenteses, fim_parenteses = buscaParenteses(expressao)
         if inicio_parenteses != None or fim_parenteses != None:
@@ -147,6 +149,7 @@ def Master(expressao):
         else:
             #A expressao original nao tem mais parenteses.
             parenteses = False
+        print(expressao)
     
     #Enquanto a expressao não estiver resolvida.
     while(resolvida == False):
@@ -159,13 +162,14 @@ def Master(expressao):
         else:
             #A expressão está resolvida.
             resolvida = True
+        print(expressao)
 
 
 #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
 #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
 #entrada = '(-136+15)'
 #entrada = '((-27+2)-4)'
-#entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
-entrada = 'raiz5'
+entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
+#entrada = 'r4'
 entrada = entrada.replace(' ', '')
 Master(entrada)

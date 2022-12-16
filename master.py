@@ -2,6 +2,7 @@ import re
 
 from operacoes import *
 
+
 #Função para buscar os parênteses em uma sentença.
 def buscaParenteses(expressao):
     abertura_parenteses = []
@@ -169,7 +170,7 @@ def Master(expressao):
     print('EXPRESSAO RETORNADA: ', expressao)
     return expressao
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
     #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
     #entrada = '(-136+15)'
@@ -178,4 +179,4 @@ if __name__ == "__main__":
     entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
     # entrada = 'r4'
     entrada = entrada.replace(' ', '')
-    Master(entrada)
+    Master(entrada)'''

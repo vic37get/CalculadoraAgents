@@ -1,10 +1,12 @@
-import pade
+from pade.core.agent import Agent
+from pade.misc.utility import display_message, start_loop
 
 #Operações da calculadora
 
-class AdicaoAgent(pade.Agent):
+class AdicaoAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(AdicaoAgent, self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Adição')
     
     def on_start(self):
         pass
@@ -15,7 +17,7 @@ class AdicaoAgent(pade.Agent):
             resultado = int(num1)+int(num2)
         except ValueError:
             resultado = float(num1)+float(num2)
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -24,9 +26,10 @@ class AdicaoAgent(pade.Agent):
             result = self.adicao(num1, num2)
             msg.respond(result)
 
-class SubtracaoAgent(pade.Agent):
+class SubtracaoAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(SubtracaoAgent,self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Subtração')
     
     def on_start(self):
         pass
@@ -37,7 +40,7 @@ class SubtracaoAgent(pade.Agent):
             resultado = int(num1)-int(num2)
         except ValueError:
             resultado = float(num1)-float(num2)
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -46,9 +49,10 @@ class SubtracaoAgent(pade.Agent):
             result = self.subtracao(num1, num2)
             msg.respond(result)
 
-class DivisaoAgent(pade.Agent):
+class DivisaoAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(DivisaoAgent,self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Divisão')
     
     def on_start(self):
         pass
@@ -59,7 +63,7 @@ class DivisaoAgent(pade.Agent):
             resultado = int(num1)/int(num2)
         except ValueError:
             resultado = float(num1)/float(num2)
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -68,9 +72,10 @@ class DivisaoAgent(pade.Agent):
             result = self.divisao(num1, num2)
             msg.respond(result)
 
-class MultiplicacaoAgent(pade.Agent):
+class MultiplicacaoAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(MultiplicacaoAgent, self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Multiplicação')
     
     def on_start(self):
         pass
@@ -81,7 +86,7 @@ class MultiplicacaoAgent(pade.Agent):
             resultado = int(num1)*int(num2)
         except ValueError:
             resultado = float(num1)*float(num2)
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -90,9 +95,10 @@ class MultiplicacaoAgent(pade.Agent):
             result = self.multiplicacao(num1, num2)
             msg.respond(result)
 
-class ExponenciacaoAgent(pade.Agent):
+class ExponenciacaoAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(ExponenciacaoAgent, self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Exponenciação\n')
     
     def on_start(self):
         pass
@@ -103,7 +109,7 @@ class ExponenciacaoAgent(pade.Agent):
             resultado = int(num1)**int(num2)
         except ValueError:
             resultado = float(num1)**float(num2)
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -112,9 +118,10 @@ class ExponenciacaoAgent(pade.Agent):
             result = self.exponenciacao(num1, num2)
             msg.respond(result)
 
-class RaizAgent(pade.Agent):
+class RaizAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
+        super(RaizAgent, self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Raiz\n')
     
     def on_start(self):
         pass
@@ -125,7 +132,7 @@ class RaizAgent(pade.Agent):
             resultado = int(num1)**1/2
         except ValueError:
             resultado = float(num1)**1/2
-        print('Resultado da operação: {}'.format(resultado))
+        print('Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):

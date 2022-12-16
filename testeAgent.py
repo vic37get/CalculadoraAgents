@@ -4,13 +4,13 @@ from pade.misc.utility import display_message, start_loop
 from sys import argv
 
 from master import *
-from operacoes import *
-
+# from operacoes import *
+from agentes import *
 
 class MasterAgent(Agent):
     def __init__(self, aid):
-        super().__init__(aid=aid, debug=False)
-        display_message(self.aid.localname, 'Hello World!')
+        super(MasterAgent, self).__init__(aid=aid, debug=False)
+        display_message(self.aid.localname, 'Oi eu sou o agente principal\n')
     
     def on_start(self):
         pass
@@ -96,32 +96,44 @@ class MasterAgent(Agent):
                         continue
                     #Se for exponenciação
                     if operacao == '^':
-                        resultado = exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(200, 200)
+                        agent_expo = ExponenciacaoAgent(AID(name=agent_name))
+                        resultado = agent_expo.exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for raiz
                     elif operacao == 'r':
-                        resultado = raiz(SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(300, 300)
+                        agent_raiz = RaizAgent(AID(name=agent_name))
+                        resultado = agent_raiz.raiz(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for multiplicação
                     elif operacao == '*':
-                        resultado = multiplicacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(400, 400)
+                        agent_mult = MultiplicacaoAgent(AID(name=agent_name))
+                        resultado = agent_mult.multiplicacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for divisão
                     elif operacao == '/':
-                        resultado = divisao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(500, 500)
+                        agent_div = DivisaoAgent(AID(name=agent_name))
+                        resultado = agent_div.divisao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for adição
                     elif operacao == '+':
-                        resultado = adicao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(600, 600)
+                        agent_adc = AdicaoAgent(AID(name=agent_name))
+                        resultado = agent_adc.adicao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for subtração
                     elif operacao == '-':
-                        resultado = subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(700, 700)
+                        agent_sub = SubtracaoAgent(AID(name=agent_name))
+                        resultado = agent_sub.subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
         return None, None, None
 
@@ -182,11 +194,11 @@ class MasterAgent(Agent):
         print('EXPRESSAO RETORNADA: ', expressao)
         return expressao
     
-    def on_message(self, msg):
-        if msg.body == '+':
-            num1, num2 = msg.content
-            result = self.adicao(num1, num2)
-            msg.respond(result)
+    # def on_message(self, msg):
+    #     if msg.body == '+':
+    #         num1, num2 = msg.content
+    #         result = self.adicao(num1, num2)
+    #         msg.respond(result)
 
 
 if __name__ == '__main__':

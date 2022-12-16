@@ -1,23 +1,41 @@
 from pade.misc.utility import display_message, start_loop
 from pade.core.agent import Agent
+from pade.acl.messages import ACLMessage
 from pade.acl.aid import AID
 from sys import argv
 
-class AgenteHelloWorld(Agent):
+
+class Remetente(Agent):
     def __init__(self, aid):
-        super(AgenteHelloWorld, self).__init__(aid=aid)
-        display_message(self.aid.localname, 'Hello World!')
+        super(Remetente, self).__init__(aid=aid, debug=False)
+
+    def on_start(self):
+        display_message(self.aid.localname, 'Enviando Mensagem')
+        message = ACLMessage(ACLMessage.INFORM)
+        message.add_receiver(AID('destinatario'))
+        message.set_content('Ola')
+        self.send(message)
+
+    def react(self, message):
+        pass
+
+
+class Destinatario(Agent):
+    def __init__(self, aid):
+        super(Destinatario, self).__init__(aid=aid, debug=False)
+
+    def react(self, message):
+        display_message(self.aid.localname, 'Mensagem recebida')
 
 
 if __name__ == '__main__':
-    agents_per_process = 3
-    c = 0
+
     agents = list()
-    for i in range(agents_per_process):
-        port = int(argv[1]) + c
-        agent_name = 'agent_hello_{}@localhost:{}'.format(port, port)
-        agente_hello = AgenteHelloWorld(AID(name=agent_name))
-        agents.append(agente_hello)
-        c += 1000
+    remetente_agent = Remetente(AID(name='remetente'))
+    agents.append(remetente_agent)
+    
+    destinatario_agent = Destinatario(AID(name='destinatario'))
+    agents.append(destinatario_agent)
+
 
     start_loop(agents)

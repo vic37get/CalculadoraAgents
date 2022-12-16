@@ -1,17 +1,23 @@
-from unittest import main, TestCase
-from master import Master
+from pade.misc.utility import display_message, start_loop
+from pade.core.agent import Agent
+from pade.acl.aid import AID
+from sys import argv
 
-expressao = '25+5'
-expressao2 = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-expressao2n = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-
-class Test(TestCase):
-    def testExpressao(self):
-        self.assertEquals(Master(expressao.replace(' ', '')), str(eval(expressao)))
-
-    def testExpressao2(self):
-        self.assertEquals(Master(expressao2.replace(' ', '')), str(eval(expressao2n)))
+class AgenteHelloWorld(Agent):
+    def __init__(self, aid):
+        super(AgenteHelloWorld, self).__init__(aid=aid)
+        display_message(self.aid.localname, 'Hello World!')
 
 
 if __name__ == '__main__':
-    main()
+    agents_per_process = 3
+    c = 0
+    agents = list()
+    for i in range(agents_per_process):
+        port = int(argv[1]) + c
+        agent_name = 'agent_hello_{}@localhost:{}'.format(port, port)
+        agente_hello = AgenteHelloWorld(AID(name=agent_name))
+        agents.append(agente_hello)
+        c += 1000
+
+    start_loop(agents)

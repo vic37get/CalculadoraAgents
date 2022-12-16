@@ -1,6 +1,7 @@
 from pade.acl.aid import AID
 from pade.core.agent import Agent
 from pade.misc.utility import display_message, start_loop
+from sys import argv
 
 from master import *
 from operacoes import *
@@ -189,7 +190,8 @@ class MasterAgent(Agent):
 
 
 if __name__ == '__main__':
-    expressao = '5+2'
+    expressao = argv[1]
+    expressao = expressao.replace(" ", "")
     agent_name = 'agente_hello_{}@localhost:{}'.format(1, 1)
     agente_hello = MasterAgent(AID(name=agent_name))
     agente_hello.Master(expressao)

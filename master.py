@@ -168,12 +168,14 @@ def Master(expressao):
         print(expressao)
     print('EXPRESSAO RETORNADA: ', expressao)
     return expressao
-#entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-#entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
-#entrada = '(-136+15)'
-#entrada = '((-27+2)-4)'
-#entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
-#entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
-#entrada = 'r4'
-#entrada = entrada.replace(' ', '')
-#Master(entrada)
+
+if __name__ == "__main__":
+    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
+    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
+    #entrada = '(-136+15)'
+    #entrada = '((-27+2)-4)'
+    #entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
+    entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
+    # entrada = 'r4'
+    entrada = entrada.replace(' ', '')
+    Master(entrada)

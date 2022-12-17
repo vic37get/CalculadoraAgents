@@ -78,7 +78,6 @@ def identificaOperacao(inicio_parenteses, fim_parenteses, expressao):
         for indice, caractere in enumerate(expressao[inicio_parenteses:fim_parenteses]):
             if caractere == operacao:
                 PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal = identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
-                print(PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal)
                 #Se o primeiro numero é None, quer dizer que se trata de um número negativo (Por exemplo: -125, a operação é -, mas o primeiro numero é None.)
                 if PRIMEIRO_NUMERO == None and operacao == '-':
                     continue
@@ -119,64 +118,3 @@ def removeParenteses(expressao):
     PARENTESES = re.compile('[\)\()]')
     expressao = re.sub(PARENTESES, '', expressao)
     return expressao
-            
-#Função que é o mestre, começa buscando as expressões entre parênteses. (precedencia)
-def Master(expressao):
-    #Se existe parenteses na expressão.
-    parenteses = True
-    #Se a expressao ja está resolvida.
-    resolvida = False
-    
-    while parenteses == True:
-        #Encontra os parenteses
-        inicio_parenteses, fim_parenteses = buscaParenteses(expressao)
-        if inicio_parenteses != None or fim_parenteses != None:
-            parenteses = True
-            #Verifica se tem operação dentro do parentese encontrado
-            if temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
-                #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-                EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
-                #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
-                if ADICIONA_SINAL == True and RESULTADO>=0:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
-                else:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), str(RESULTADO))
-            #Caso não exista operações a serem resolvidas dentro do parentese
-            else:
-                #Remove os parenteses da expressao.
-                exp_sem_parenteses = removeParenteses(expressao[inicio_parenteses:fim_parenteses])
-                #Remove da expressao original os parenteses.
-                expressao = expressao.replace(expressao[inicio_parenteses:fim_parenteses], exp_sem_parenteses)
-        else:
-            #A expressao original nao tem mais parenteses.
-            parenteses = False
-    
-    
-    #Enquanto a expressao não estiver resolvida.
-    while(resolvida == False):
-        #Verifica se existe operação
-        if temOperacao(expressao) != None:
-            #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-            EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
-            #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
-            if ADICIONA_SINAL == True and RESULTADO>=0:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
-            else:
-                expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), str(RESULTADO))
-        else:
-            #A expressão está resolvida.
-            resolvida = True
-        print(expressao)
-    print('EXPRESSAO RETORNADA: ', expressao)
-    return expressao
-
-'''if __name__ == "__main__":
-    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
-    #entrada = '(-136+15)'
-    #entrada = '((-27+2)-4)'
-    #entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
-    entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
-    # entrada = 'r4'
-    entrada = entrada.replace(' ', '')
-    Master(entrada)'''

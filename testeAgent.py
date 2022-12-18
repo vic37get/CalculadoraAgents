@@ -4,8 +4,6 @@ from pade.core.agent import Agent
 from pade.misc.utility import display_message, start_loop
 from sys import argv
 
-# from master import *
-# from operacoes import *
 from agentes import *
 
 class MasterAgent(Agent):
@@ -97,42 +95,42 @@ class MasterAgent(Agent):
                         continue
                     #Se for exponenciação
                     if operacao == '^':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(200, 200)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(100, 100)
                         agent_expo = ExponenciacaoAgent(AID(name=agent_name))
                         resultado = agent_expo.exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for raiz
                     elif operacao == 'r':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(300, 300)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(1020, 1020)
                         agent_raiz = RaizAgent(AID(name=agent_name))
                         resultado = agent_raiz.raiz(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for multiplicação
                     elif operacao == '*':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(400, 400)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(1040, 1040)
                         agent_mult = MultiplicacaoAgent(AID(name=agent_name))
                         resultado = agent_mult.multiplicacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for divisão
                     elif operacao == '/':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(500, 500)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(1060, 1060)
                         agent_div = DivisaoAgent(AID(name=agent_name))
                         resultado = agent_div.divisao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for adição
                     elif operacao == '+':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(600, 600)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(1080, 1080)
                         agent_adc = AdicaoAgent(AID(name=agent_name))
                         resultado = agent_adc.adicao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for subtração
                     elif operacao == '-':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(700, 700)
+                        agent_name = 'agente_hello_{}@localhost:{}'.format(2000, 2000)
                         agent_sub = SubtracaoAgent(AID(name=agent_name))
                         resultado = agent_sub.subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
@@ -155,7 +153,7 @@ class MasterAgent(Agent):
         
         while parenteses == True:
             #Encontra os parenteses
-            inicio_parenteses, fim_parenteses = (expressao)
+            inicio_parenteses, fim_parenteses = self.buscaParenteses(expressao)
             if inicio_parenteses != None or fim_parenteses != None:
                 parenteses = True
                 #Verifica se tem operação dentro do parentese encontrado
@@ -192,7 +190,6 @@ class MasterAgent(Agent):
             else:
                 #A expressão está resolvida.
                 resolvida = True
-            print(expressao)
         display_message(self.aid.localname,'EXPRESSAO RETORNADA: {}'.format(expressao))
         return expressao
     

@@ -202,17 +202,10 @@ class MasterAgent(Agent):
                 resolvida = True
         display_message(self.aid.localname,'Resultado final da expressão: {}'.format(expressao))
         return expressao
-    
-    # def on_message(self, msg):
-    #     if msg.body == '+':
-    #         num1, num2 = msg.content
-    #         result = self.adicao(num1, num2)
-    #         msg.respond(result)
-
 
 if __name__ == '__main__':
     expressao = argv[1]
-    expressao = expressao.replace(" ", "")
+    expressao = expressao.replace(' ', '')
     expressao = expressao.replace("–", "-")
     agent_name = 'agente_mestre@localhost:{}'.format(1)
     agente_hello = MasterAgent(AID(name=agent_name))

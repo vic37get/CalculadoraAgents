@@ -89,48 +89,48 @@ class MasterAgent(Agent):
             for indice, caractere in enumerate(expressao[inicio_parenteses:fim_parenteses]):
                 if caractere == operacao:
                     PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal = self.identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
-                    print(PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal)
+                    display_message(self.aid.localname, "{} {} {}\n".format(PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal))
                     #Se o primeiro numero é None, quer dizer que se trata de um número negativo (Por exemplo: -125, a operação é -, mas o primeiro numero é None.)
                     if PRIMEIRO_NUMERO == None and operacao == '-':
                         continue
                     #Se for exponenciação
                     if operacao == '^':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(100, 100)
+                        agent_name = 'agente_exponenciacao_{}@localhost:{}'.format(100, 100)
                         agent_expo = ExponenciacaoAgent(AID(name=agent_name))
                         resultado = agent_expo.exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for raiz
                     elif operacao == 'r':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(1020, 1020)
+                        agent_name = 'agente_raiz_{}@localhost:{}'.format(1020, 1020)
                         agent_raiz = RaizAgent(AID(name=agent_name))
                         resultado = agent_raiz.raiz(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for multiplicação
                     elif operacao == '*':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(1040, 1040)
+                        agent_name = 'agente_multiplicacao_{}@localhost:{}'.format(1040, 1040)
                         agent_mult = MultiplicacaoAgent(AID(name=agent_name))
                         resultado = agent_mult.multiplicacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for divisão
                     elif operacao == '/':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(1060, 1060)
+                        agent_name = 'agente_divisao_{}@localhost:{}'.format(1060, 1060)
                         agent_div = DivisaoAgent(AID(name=agent_name))
                         resultado = agent_div.divisao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for adição
                     elif operacao == '+':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(1080, 1080)
+                        agent_name = 'agente_adicao_{}@localhost:{}'.format(1080, 1080)
                         agent_adc = AdicaoAgent(AID(name=agent_name))
                         resultado = agent_adc.adicao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
                     #Se for subtração
                     elif operacao == '-':
-                        agent_name = 'agente_hello_{}@localhost:{}'.format(2000, 2000)
+                        agent_name = 'agente_subtracao_{}@localhost:{}'.format(2000, 2000)
                         agent_sub = SubtracaoAgent(AID(name=agent_name))
                         resultado = agent_sub.subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
                         return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
@@ -204,6 +204,6 @@ if __name__ == '__main__':
     expressao = argv[1]
     expressao = expressao.replace(" ", "")
     expressao = expressao.replace("–", "-")
-    agent_name = 'agente_resultado_expressao{}@localhost:{}'.format(1, 1)
+    agent_name = 'agente_resultado_expressao_{}@localhost:{}'.format(1, 1)
     agente_hello = MasterAgent(AID(name=agent_name))
     agente_hello.Master(expressao)

@@ -1,9 +1,10 @@
+import re
 from pade.acl.aid import AID
 from pade.core.agent import Agent
 from pade.misc.utility import display_message, start_loop
 from sys import argv
 
-from master import *
+# from master import *
 # from operacoes import *
 from agentes import *
 
@@ -16,7 +17,7 @@ class MasterAgent(Agent):
         pass
 
     #Função para buscar os parênteses em uma sentença.
-    def buscaParenteses(expressao):
+    def buscaParenteses(self, expressao):
         abertura_parenteses = []
         fechamento_parenteses = []
         for index, caractere in enumerate(expressao):
@@ -39,7 +40,7 @@ class MasterAgent(Agent):
             return None, None
 
     #Função para identificar os números envolvidos na operação, pegando a partir do indice do simbolo da operação
-    def identificaNumerais(expressao, indice_caractere):
+    def identificaNumerais(self, expressao, indice_caractere):
         #regex para identificar operações matemáticas
         OPERACOES = re.compile('(((r)|([\^*\/+\-])))')
         #regex para identificar numeros, sejam inteiros ou decimais.
@@ -76,20 +77,20 @@ class MasterAgent(Agent):
         return PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal
 
     #Função para verificar se ainda existe uma operação a ser resolvida na expressão.
-    def temOperacao(expressao_testada):
+    def temOperacao(self, expressao_testada):
         #Regex que identifica numeros e operações (se existir uma operação obrigatoriamente deve existir numeros ao redor dela).
         OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})((([\^*\/+\-])))[0-9](\.)?([0-9]{0,})|(r[0-9](\.)?([0-9]{0,})))')
         busca_operacoes = re.search(OPERACOES, expressao_testada)
         return busca_operacoes
 
     #Função para identificar a operação a ser realizada.
-    def identificaOperacao(inicio_parenteses, fim_parenteses, expressao):
+    def identificaOperacao(self, inicio_parenteses, fim_parenteses, expressao):
         lista_operacoes = ['^', 'r', '*', '/', '+', '-']
         
         for operacao in lista_operacoes:
             for indice, caractere in enumerate(expressao[inicio_parenteses:fim_parenteses]):
                 if caractere == operacao:
-                    PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal = identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
+                    PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal = self.identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
                     print(PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal)
                     #Se o primeiro numero é None, quer dizer que se trata de um número negativo (Por exemplo: -125, a operação é -, mas o primeiro numero é None.)
                     if PRIMEIRO_NUMERO == None and operacao == '-':
@@ -138,11 +139,12 @@ class MasterAgent(Agent):
         return None, None, None
 
     #Função para remover os parênteses.
-    def removeParenteses(expressao):
+    def removeParenteses(self, expressao):
         #Regex para identificar parênteses
         PARENTESES = re.compile('[\)\()]')
         expressao = re.sub(PARENTESES, '', expressao)
         return expressao
+                
                 
     #Função que é o mestre, começa buscando as expressões entre parênteses. (precedencia)
     def Master(self, expressao):
@@ -153,13 +155,13 @@ class MasterAgent(Agent):
         
         while parenteses == True:
             #Encontra os parenteses
-            inicio_parenteses, fim_parenteses = buscaParenteses(expressao)
+            inicio_parenteses, fim_parenteses = (expressao)
             if inicio_parenteses != None or fim_parenteses != None:
                 parenteses = True
                 #Verifica se tem operação dentro do parentese encontrado
-                if temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
+                if self.temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
                     #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-                    EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
+                    EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = self.identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
                     #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
                     if ADICIONA_SINAL == True and RESULTADO>=0:
                         expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
@@ -168,7 +170,7 @@ class MasterAgent(Agent):
                 #Caso não exista operações a serem resolvidas dentro do parentese
                 else:
                     #Remove os parenteses da expressao.
-                    exp_sem_parenteses = removeParenteses(expressao[inicio_parenteses:fim_parenteses])
+                    exp_sem_parenteses = self.removeParenteses(expressao[inicio_parenteses:fim_parenteses])
                     #Remove da expressao original os parenteses.
                     expressao = expressao.replace(expressao[inicio_parenteses:fim_parenteses], exp_sem_parenteses)
             else:
@@ -179,9 +181,9 @@ class MasterAgent(Agent):
         #Enquanto a expressao não estiver resolvida.
         while(resolvida == False):
             #Verifica se existe operação
-            if temOperacao(expressao) != None:
+            if self.temOperacao(expressao) != None:
                 #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-                EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
+                EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = self.identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
                 #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
                 if ADICIONA_SINAL == True and RESULTADO>=0:
                         expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
@@ -191,7 +193,7 @@ class MasterAgent(Agent):
                 #A expressão está resolvida.
                 resolvida = True
             print(expressao)
-        print('EXPRESSAO RETORNADA: ', expressao)
+        display_message(self.aid.localname,'EXPRESSAO RETORNADA: {}'.format(expressao))
         return expressao
     
     # def on_message(self, msg):
@@ -204,6 +206,6 @@ class MasterAgent(Agent):
 if __name__ == '__main__':
     expressao = argv[1]
     expressao = expressao.replace(" ", "")
-    agent_name = 'agente_hello_{}@localhost:{}'.format(1, 1)
+    agent_name = 'agente_resultado_expressao{}@localhost:{}'.format(1, 1)
     agente_hello = MasterAgent(AID(name=agent_name))
     agente_hello.Master(expressao)

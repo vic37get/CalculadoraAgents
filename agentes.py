@@ -11,13 +11,13 @@ class AdicaoAgent(Agent):
     def on_start(self):
         pass
 
-    def adicao(num1, num2):
+    def adicao(self, num1, num2):
         print('Realizando a operação de soma entre os números {} e {}'.format(num1, num2))
         try:
             resultado = int(num1)+int(num2)
         except ValueError:
             resultado = float(num1)+float(num2)
-        print('Resultado da operação: {}\n'.format(resultado))
+        display_message(self.aid.localname,'Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -34,7 +34,7 @@ class SubtracaoAgent(Agent):
     def on_start(self):
         pass
 
-    def subtracao(num1, num2):
+    def subtracao(self, num1, num2):
         print('Realizando a operação de subtração entre os números {} e {}'.format(num1, num2))
         try:
             resultado = int(num1)-int(num2)
@@ -57,7 +57,7 @@ class DivisaoAgent(Agent):
     def on_start(self):
         pass
 
-    def divisao(num1, num2):
+    def divisao(self, num1, num2):
         print('Realizando a operação de divisão entre os números {} e {}'.format(num1, num2))
         try:
             resultado = int(num1)/int(num2)
@@ -80,13 +80,13 @@ class MultiplicacaoAgent(Agent):
     def on_start(self):
         pass
 
-    def multiplicacao(num1, num2):
+    def multiplicacao(self, num1, num2):
         print('Realizando a operação de multiplicação entre os números {} e {}'.format(num1, num2))
         try:
             resultado = int(num1)*int(num2)
         except ValueError:
             resultado = float(num1)*float(num2)
-        print('Resultado da operação: {}\n'.format(resultado))
+        display_message(self.aid.localname,'Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -103,13 +103,13 @@ class ExponenciacaoAgent(Agent):
     def on_start(self):
         pass
 
-    def exponenciacao(num1, num2):
+    def exponenciacao(self, num1, num2):
         print('Realizando a operação de exponenciação entre os números {} e {}'.format(num1, num2))
         try:
             resultado = int(num1)**int(num2)
         except ValueError:
             resultado = float(num1)**float(num2)
-        print('Resultado da operação: {}\n'.format(resultado))
+        display_message(self.aid.localname,'Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):
@@ -126,13 +126,13 @@ class RaizAgent(Agent):
     def on_start(self):
         pass
 
-    def raiz(num1):
+    def raiz(self, num1):
         print('Realizando a operação de raiz quadrada do número {}'.format(num1))
         try:
             resultado = int(num1)**1/2
         except ValueError:
             resultado = float(num1)**1/2
-        print('Resultado da operação: {}\n'.format(resultado))
+        display_message(self.aid.localname,'Resultado da operação: {}\n'.format(resultado))
         return resultado
     
     def on_message(self, msg):

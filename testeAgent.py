@@ -203,6 +203,7 @@ class MasterAgent(Agent):
 if __name__ == '__main__':
     expressao = argv[1]
     expressao = expressao.replace(" ", "")
+    expressao = expressao.replace("–", "-")
     agent_name = 'agente_resultado_expressao{}@localhost:{}'.format(1, 1)
     agente_hello = MasterAgent(AID(name=agent_name))
     agente_hello.Master(expressao)

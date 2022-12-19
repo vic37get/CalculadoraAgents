@@ -1,199 +1,447 @@
-import re
-from pade.acl.aid import AID
-from pade.core.agent import Agent
-from pade.misc.utility import display_message, start_loop
+import time
+import math
+from spade.agent import Agent
+from spade.behaviour import CyclicBehaviour, OneShotBehaviour
+from spade.message import Message
 
-# from operacoes import *
-from agentes import *
+debug = True
 
 
-#Função para buscar os parênteses em uma sentença.
-def buscaParenteses(expressao):
-    abertura_parenteses = []
-    fechamento_parenteses = []
-    for index, caractere in enumerate(expressao):
-        if caractere == '(':
-            abertura_parenteses.append(index)
-        if caractere == ')':
-            fechamento_parenteses.append(index)
-    try:
-        #Pegar o parêntese mais interno, para isso o inicial é o mais á direita (da lista de abertura de parenteses) e o final o mais á esquerda (da lista de fechamento de parenteses).
-        inicio = max(abertura_parenteses)
-        fim = min(fechamento_parenteses)
-        #Se existem parenteses concorrentes. Exemplo: (2+5) - (5-7), o parentese de inicio vai ter indice maior que o de fim.
-        if inicio > fim:
-            for caractere in range(fim, 0, -1):
-                if expressao[caractere] == '(':
-                    inicio = caractere
-                    return inicio, fim+1
-        return inicio, fim+1 #Retorna o inicio e o fim da expressao com parênteses, incluindo os parênteses.
-    except:
-        return None, None
+def achaOperacao(equacao):
+    operacoes = ["=", "+", "-", "/", "*", "#", "^", "("]
+    maior_operacao = ["=", ""]
+    for i in range(len(equacao)):
+        if equacao[i] in operacoes:
+            if operacoes.index(maior_operacao[0]) < operacoes.index(equacao[i]):
+                maior_operacao[0] = equacao[i]
+    maior_operacao[1] = equacao.index(maior_operacao[0])  # Guarda a posição do maiorOperador encontrado
+    return maior_operacao
 
-#Função para identificar os números envolvidos na operação, pegando a partir do indice do simbolo da operação
-def identificaNumerais(expressao, indice_caractere):
-    #regex para identificar operações matemáticas
-    OPERACOES = re.compile('(((r)|([\^*\/+\-])))')
-    #regex para identificar numeros, sejam inteiros ou decimais.
-    adiciona_sinal = False
 
-    PRIMEIRO_NUMERO = ''
-    SEGUNDO_NUMERO = ''
-    #Buscando o número que fica antes do sinal da operação, ou seja, o primeiro número da operação.
-    for caractere in range(indice_caractere-1, -1, -1):
-        if re.search(OPERACOES, expressao[caractere]) == None:
-            if expressao[caractere] != '(':
-                PRIMEIRO_NUMERO = str(expressao[caractere]) + PRIMEIRO_NUMERO
-            else:
-                continue
-        else:
-            if expressao[caractere] == '-':
-                PRIMEIRO_NUMERO = str(expressao[caractere]) + PRIMEIRO_NUMERO
-                adiciona_sinal = True
-            break
+def achaOperandos(equacao, maior_operacao):
+    operacoes = ["=", "-", "+", "/", "*", "#", "^"]
+    operandos = ["", "", 0, 0]
+    for i in range(len(equacao)):
+        if equacao[i] == maior_operacao:
+            for a in range(i - 1, -1, -1):
+                if equacao[a] in operacoes:
+                    break
+                operandos[0] = str(equacao[a]) + operandos[0]
+                operandos[2] += 1
 
-    #Buscando o número que fica depois do sinal da operação, ou seja, o segundo número da operação.
-    for caractere in range(indice_caractere+1, len(expressao)):
-        if re.search(OPERACOES, expressao[caractere]) == None:
-            if expressao[caractere] != ')':
-                SEGUNDO_NUMERO += str(expressao[caractere])
-            else:
-                continue
-        else:
-            break
-    #Condição em que se verifica se tem um número negativo mais á esquerda, se não tiver é null.
-    if PRIMEIRO_NUMERO == '':
-        return None, SEGUNDO_NUMERO, adiciona_sinal
+            for b in range(i + 1, len(equacao)):
+                if equacao[b] in operacoes:
+                    return operandos
+                operandos[1] = operandos[1] + str(equacao[b])
+                operandos[3] += 1
+                if b + 1 == len(equacao):
+                    return operandos
 
-    return PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal
 
-#Função para verificar se ainda existe uma operação a ser resolvida na expressão.
-def temOperacao(expressao_testada):
-    #Regex que identifica numeros e operações (se existir uma operação obrigatoriamente deve existir numeros ao redor dela).
-    OPERACOES = re.compile('([0-9]{1,}(\.)?([0-9]{0,})((([\^*\/+\-])))[0-9](\.)?([0-9]{0,})|(r[0-9](\.)?([0-9]{0,})))')
-    busca_operacoes = re.search(OPERACOES, expressao_testada)
-    return busca_operacoes
+class SumAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'SumAgent: Mensagem recebida, fazendo soma com os numeros: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = float(resultado[0]) + float(resultado[1])
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'SumAgent: Resposta enviada, resultado da soma: {msg.body}')
+                    time.sleep(5)
 
-#Função para identificar a operação a ser realizada.
-def identificaOperacao(self, inicio_parenteses, fim_parenteses, expressao):
-    lista_operacoes = ['^', 'r', '*', '/', '+', '-']
-    
-    for operacao in lista_operacoes:
-        for indice, caractere in enumerate(expressao[inicio_parenteses:fim_parenteses]):
-            if caractere == operacao:
-                PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal = self.identificaNumerais(expressao[inicio_parenteses:fim_parenteses], indice)
-                print(PRIMEIRO_NUMERO, SEGUNDO_NUMERO, adiciona_sinal)
-                #Se o primeiro numero é None, quer dizer que se trata de um número negativo (Por exemplo: -125, a operação é -, mas o primeiro numero é None.)
-                if PRIMEIRO_NUMERO == None and operacao == '-':
-                    continue
-                #Se for exponenciação
-                if operacao == '^':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(200, 200)
-                    agent_expo = ExponenciacaoAgent(AID(name=agent_name))
-                    resultado = agent_expo.exponenciacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
 
-                #Se for raiz
-                elif operacao == 'r':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(300, 300)
-                    agent_raiz = RaizAgent(AID(name=agent_name))
-                    resultado = agent_raiz.raiz(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}'.format(operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
-                #Se for multiplicação
-                elif operacao == '*':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(400, 400)
-                    agent_mult = MultiplicacaoAgent(AID(name=agent_name))
-                    resultado = agent_mult.multiplicacao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
+class SubtractionAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'SubtractionAgent: Mensagem recebida, fazendo subtracao com os numeros: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = float(resultado[0]) - float(resultado[1])
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'SubtractionAgent: Resposta enviada, resultado da subtracao: {msg.body}')
+                    time.sleep(5)
 
-                #Se for divisão
-                elif operacao == '/':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(500, 500)
-                    agent_div = DivisaoAgent(AID(name=agent_name))
-                    resultado = agent_div.divisao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
 
-                #Se for adição
-                elif operacao == '+':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(600, 600)
-                    agent_adc = AdicaoAgent(AID(name=agent_name))
-                    resultado = agent_adc.adicao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
 
-                #Se for subtração
-                elif operacao == '-':
-                    agent_name = 'agente_hello_{}@localhost:{}'.format(700, 700)
-                    agent_sub = SubtracaoAgent(AID(name=agent_name))
-                    agent_sub.subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    resultado = agent_sub.subtracao(PRIMEIRO_NUMERO, SEGUNDO_NUMERO)
-                    return '{}{}{}'.format(PRIMEIRO_NUMERO, operacao, SEGUNDO_NUMERO), resultado, adiciona_sinal
-        return None, None, None
+class MultiplicationAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'MultiplicationAgent: Mensagem recebida, fazendo multiplicacao com os numeros: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = float(resultado[0]) * float(resultado[1])
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'MultiplicationAgent: Resposta enviada, resultado da multiplicacao: {msg.body}')
+                    time.sleep(5)
 
-#Função para remover os parênteses.
-def removeParenteses(expressao):
-    #Regex para identificar parênteses
-    PARENTESES = re.compile('[\)\()]')
-    expressao = re.sub(PARENTESES, '', expressao)
-    return expressao
-            
-#Função que é o mestre, começa buscando as expressões entre parênteses. (precedencia)
-def Master(expressao):
-    #Se existe parenteses na expressão.
-    parenteses = True
-    #Se a expressao ja está resolvida.
-    resolvida = False
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
 
-    while parenteses == True:
-        #Encontra os parenteses
-        inicio_parenteses, fim_parenteses = buscaParenteses(expressao)
-        if inicio_parenteses != None or fim_parenteses != None:
-            parenteses = True
-            #Verifica se tem operação dentro do parentese encontrado
-            if temOperacao(expressao[inicio_parenteses:fim_parenteses]) != None:
-                #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-                EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
-                #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
-                if ADICIONA_SINAL == True and RESULTADO>=0:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
+
+class DivisionAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'DivisionAgent: Mensagem recebida, fazendo divisao com os numeros: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = float(resultado[0]) / float(resultado[1])
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'DivisionAgent: Resposta enviada, resultado da divisao: {msg.body}')
+                    time.sleep(5)
+
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
+
+
+class PowerAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'PowerAgent: Mensagem recebida, fazendo potencia com os numeros: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = float(resultado[0]) ** float(resultado[1])
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'PowerAgent: Resposta enviada, resultado da potencia: {msg.body}')
+                    time.sleep(5)
+
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
+
+
+class SquareRootAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive()
+            if msg:
+                if debug:
+                    print(f'SquareRootAgent: Mensagem recebida, fazendo raiz quadrada do numero: {msg.body}')
+                resultado = msg.body.split(" ")
+                resultado = math.sqrt(float(resultado[0]))
+                sender = msg.sender
+                msg = Message(to=str(sender))
+                msg.body = str(resultado)
+                await self.send(msg)
+                if debug:
+                    print(f'SquareRootAgent: Resposta enviada, resultado da raiz quadrada: {msg.body}')
+                    time.sleep(5)
+
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
+
+
+class ParenthesisAgent(Agent):
+    class ReceiveMsg(CyclicBehaviour):
+        async def run(self):
+
+            self.expression = await self.receive(timeout=60)
+            if debug:
+                print(f'ParenthesisAgent: Mensagem recebida: {self.expression.body}')
+            self.expression = self.expression.body.split(" ")
+
+            while len(self.expression) > 1:
+
+                f = achaOperacao(self.expression)
+                maior_operacao = f[0]
+                x = int(f[1])
+
+                operandos = achaOperandos(self.expression, maior_operacao)
+                if maior_operacao != "#":
+                    num1 = float(operandos[0])
+                    num2 = float(operandos[1])
                 else:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), str(RESULTADO))
-            #Caso não exista operações a serem resolvidas dentro do parentese
-            else:
-                #Remove os parenteses da expressao.
-                exp_sem_parenteses = removeParenteses(expressao[inicio_parenteses:fim_parenteses])
-                #Remove da expressao original os parenteses.
-                expressao = expressao.replace(expressao[inicio_parenteses:fim_parenteses], exp_sem_parenteses)
-        else:
-            #A expressao original nao tem mais parenteses.
-            parenteses = False
+                    num2 = float(operandos[1])
+
+                if maior_operacao == "^":
+                    msg = Message(to='power_agent@localhost/5222')
+                    msg.body = str(num1) + " " + str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de potencia: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+                elif maior_operacao == "#":
+                    msg = Message(to='squareroot_agent@localhost/5222')
+                    msg.body = str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de raiz quadrada: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+                elif maior_operacao == "*":
+                    msg = Message(to='multiplication_agent@localhost/5222')
+                    msg.body = str(num1) + " " + str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de multiplicacao: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+                elif maior_operacao == "/":
+                    msg = Message(to='division_agent@localhost/5222')
+                    msg.body = str(num1) + " " + str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de divisao: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+                elif maior_operacao == "+":
+                    msg = Message(to='sum_agent@localhost/5222')
+                    msg.body = str(num1) + " " + str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de soma: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+                elif maior_operacao == "-" or maior_operacao == "–":
+                    msg = Message(to='subtract_agent@localhost/5222')
+                    msg.body = str(num1) + " " + str(num2)
+                    await self.send(msg)
+                    if debug:
+                        print(f'ParenthesisAgent: Enviando operandos para operacao de subtracao: {msg.body}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression[x - operandos[2]] = msg.body
+
+                for g in range(x - operandos[2] + 1, x + operandos[3] + 1):
+                    self.expression.pop(x - operandos[2] + 1)
+
+                if len(self.expression) == 1:
+                    msg = Message(to='coordinator_agent@localhost/5222')
+                    msg.body = self.expression[0]
+                    await self.send(msg)
+                    break
+
+    async def setup(self):
+        self.add_behaviour(self.ReceiveMsg())
 
 
-    #Enquanto a expressao não estiver resolvida.
-    while(resolvida == False):
-        #Verifica se existe operação
-        if temOperacao(expressao) != None:
-            #Se houver, identifica a operação, chama a função que calcula aquela expressao e retorna o resultado.
-            EXPRESSAO_RESOLVIDA, RESULTADO, ADICIONA_SINAL = identificaOperacao(inicio_parenteses, fim_parenteses, expressao)
-            #Após calcular, substitui na expressao original, a expressão resolvida pelo resultado dela.
-            if ADICIONA_SINAL == True and RESULTADO>=0:
-                    expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), '+{}'.format(RESULTADO))
-            else:
-                expressao = expressao.replace(str(EXPRESSAO_RESOLVIDA), str(RESULTADO))
-        else:
-            #A expressão está resolvida.
-            resolvida = True
-        print(expressao)
-    print('EXPRESSAO RETORNADA: ', expressao)
-    return expressao
+class CoordinatorAgent(Agent):    
+    class SolveExpression(OneShotBehaviour):
+        def __init__(self):
+            super().__init__()
+            self.expression = None
+        
+        @staticmethod
+        def match_parenthesis(expression):
+            for i in range(len(expression)):
+                if expression[i] == ")":
+                    return i
 
-'''if __name__ == "__main__":
-    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / (2+5) - (1+2)"
-    #entrada = "23 + 12 - 55 + 2 + 4 - 8 / ((2*3)+5-(4/2)-12^2+(5/5))"
-    #entrada = '(-136+15)'
-    #entrada = '((-27+2)-4)'
-    #entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2'
-    entrada = '23 + 12 - 55 + (2 + 4) - 8 / 2^2 + r4'
-    # entrada = 'r4'
-    entrada = entrada.replace(' ', '')
-    Master(entrada)'''
+        async def run(self):
+            self.expression = input('Digite a expressão: ')
+            if self.expression == ' ':
+                await self.agent.stop()
+            self.expression = self.expression.split(" ")
+
+            while len(self.expression) != 1:
+
+                f = achaOperacao(self.expression)
+                maior_operacao = f[0]
+                x = int(f[1])
+
+                expressao = ""
+                for i in self.expression:
+                    expressao += " " + i
+                print(f'CoordinatorAgent: Expressao a ser resolvida: {expressao}')
+
+                if maior_operacao == "(":
+                    interior_parenthesis = ""
+                    final_index = self.match_parenthesis(self.expression)
+                    initial_index = 0
+                    self.expression.pop(final_index)
+                    for a in range(final_index - 1, -1, -1):
+                        if self.expression[a] == '(':
+                            initial_index = a
+                            break
+                    for a in range(initial_index + 1, final_index):
+                        interior_parenthesis += " " + self.expression[a]
+                    for a in range(final_index - 1, initial_index - 1, -1):
+                        self.expression.pop(a)
+                    msg = Message(to='parenthesis_agent@localhost/5222')
+                    msg.body = interior_parenthesis
+                    await self.send(msg)
+                    if debug:
+                        print(
+                            f'CoordinatorAgent: Enviando operacao do parenteses para o agente de parenteses:'
+                            f'{interior_parenthesis}')
+                    msg = await self.receive(timeout=60)
+                    if msg:
+                        self.expression.insert(initial_index, msg.body)
+                        if debug:
+                            print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                else:
+                    operandos = achaOperandos(self.expression, maior_operacao)
+                    if maior_operacao != "#":
+                        num1 = float(operandos[0])
+                        num2 = float(operandos[1])
+                    else:
+                        num2 = float(operandos[1])
+
+                    if maior_operacao == "^":
+                        msg = Message(to='power_agent@localhost/5222')
+                        msg.body = str(num1) + " " + str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de potencia: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                    elif maior_operacao == "#":
+                        msg = Message(to='squareroot_agent@localhost/5222')
+                        msg.body = str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de raiz quadrada: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                    elif maior_operacao == "*":
+                        msg = Message(to='multiplication_agent@localhost/5222')
+                        msg.body = str(num1) + " " + str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de multiplicacao: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                    elif maior_operacao == "/":
+                        msg = Message(to='division_agent@localhost/5222')
+                        msg.body = str(num1) + " " + str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de divisao: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                    elif maior_operacao == "+":
+                        msg = Message(to='sum_agent@localhost/5222')
+                        msg.body = str(num1) + " " + str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de soma: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+                    elif maior_operacao == "-" or maior_operacao == "–":
+                        msg = Message(to='subtract_agent@localhost/5222')
+                        msg.body = str(num1) + " " + str(num2)
+                        await self.send(msg)
+                        if debug:
+                            print(f'CoordinatorAgent: Enviando operandos para operacao de subtracao: {msg.body}')
+                        msg = await self.receive(timeout=60)
+                        if msg:
+                            self.expression[x - operandos[2]] = msg.body
+                            if debug:
+                                print(f'CoordinatorAgent: Resposta recebida, resultado da operacao: {msg.body}')
+
+                    for g in range(x - operandos[2] + 1, x + operandos[3] + 1):
+                        self.expression.pop(x - operandos[2] + 1)
+
+                if len(self.expression) == 1:
+                    print(f'Resultado da expressão encontrado: {self.expression[0]}')
+                    await self.agent.stop()
+                    break
+
+    async def setup(self):
+        self.add_behaviour(self.SolveExpression())
+
+
+if __name__ == "__main__":
+    debug = False
+
+    soma = SumAgent("sum_agent@localhost/5222", "123")
+    future = soma.start()
+    future.result()
+    # print('Soma inicializado')
+    subtracao = SubtractionAgent("subtract_agent@localhost/5222", "123")
+    future = subtracao.start()
+    future.result()
+    # print('Subtracao inicializado')
+    multiplicacao = MultiplicationAgent("multiplication_agent@localhost/5222", "123")
+    future = multiplicacao.start()
+    future.result()
+    # print('Multiplicacao inicializado')
+    divisao = DivisionAgent("division_agent@localhost/5222", "123")
+    future = divisao.start()
+    future.result()
+    # print('Divisao inicializado')
+    potencia = PowerAgent("power_agent@localhost/5222", "123")
+    future = potencia.start()
+    future.result()
+    # print('Potencia inicializado')
+    raiz = SquareRootAgent("squareroot_agent@localhost/5222", "123")
+    future = raiz.start()
+    future.result()
+    # print('Raiz inicializado')
+    parenteses = ParenthesisAgent("parenthesis_agent@localhost/5222", "123")
+    future = parenteses.start()
+    future.result()
+    # print('Parenteses inicializado')
+    coordenador = CoordinatorAgent("coordinator_agent@localhost/5222", "123")
+    future = coordenador.start()
+    future.result()
+    # print('Coordenador inicializado')
+
+    while coordenador.is_alive():
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            soma.stop()
+            subtracao.stop()
+            multiplicacao.stop()
+            divisao.stop()
+            potencia.stop()
+            raiz.stop()
+            parenteses.stop()
+            coordenador.stop()
+            break
+    print("Agents finished")

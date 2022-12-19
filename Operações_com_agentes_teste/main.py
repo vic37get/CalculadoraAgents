@@ -10,7 +10,7 @@ from pade.misc.utility import display_message
 class MasterAgent(Agent):
     def __init__(self, aid):
         super(MasterAgent, self).__init__(aid=aid, debug=False)
-        display_message(self.aid.localname, 'Oi eu sou o agente principal\n')
+        display_message(self.aid.localname, 'Oi eu sou o Agente Mestre\n')
     
     def on_start(self):
         pass

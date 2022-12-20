@@ -3,6 +3,7 @@ import math
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour, OneShotBehaviour
 from spade.message import Message
+from operacoes import *
 
 debug = True
 
@@ -38,130 +39,130 @@ def achaOperandos(equacao, maior_operacao):
                     return operandos
 
 
-class SumAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'SumAgent: Mensagem recebida, fazendo soma com os numeros: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = float(resultado[0]) + float(resultado[1])
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'SumAgent: Resposta enviada, resultado da soma: {msg.body}')
-                    time.sleep(5)
+# class SumAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'SumAgent: Mensagem recebida, fazendo soma com os numeros: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = float(resultado[0]) + float(resultado[1])
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'SumAgent: Resposta enviada, resultado da soma: {msg.body}')
+#                     time.sleep(5)
 
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
-
-
-class SubtractionAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'SubtractionAgent: Mensagem recebida, fazendo subtracao com os numeros: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = float(resultado[0]) - float(resultado[1])
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'SubtractionAgent: Resposta enviada, resultado da subtracao: {msg.body}')
-                    time.sleep(5)
-
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
 
 
-class MultiplicationAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'MultiplicationAgent: Mensagem recebida, fazendo multiplicacao com os numeros: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = float(resultado[0]) * float(resultado[1])
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'MultiplicationAgent: Resposta enviada, resultado da multiplicacao: {msg.body}')
-                    time.sleep(5)
+# class SubtractionAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'SubtractionAgent: Mensagem recebida, fazendo subtracao com os numeros: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = float(resultado[0]) - float(resultado[1])
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'SubtractionAgent: Resposta enviada, resultado da subtracao: {msg.body}')
+#                     time.sleep(5)
 
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
-
-
-class DivisionAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'DivisionAgent: Mensagem recebida, fazendo divisao com os numeros: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = float(resultado[0]) / float(resultado[1])
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'DivisionAgent: Resposta enviada, resultado da divisao: {msg.body}')
-                    time.sleep(5)
-
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
 
 
-class PowerAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'PowerAgent: Mensagem recebida, fazendo potencia com os numeros: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = float(resultado[0]) ** float(resultado[1])
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'PowerAgent: Resposta enviada, resultado da potencia: {msg.body}')
-                    time.sleep(5)
+# class MultiplicationAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'MultiplicationAgent: Mensagem recebida, fazendo multiplicacao com os numeros: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = float(resultado[0]) * float(resultado[1])
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'MultiplicationAgent: Resposta enviada, resultado da multiplicacao: {msg.body}')
+#                     time.sleep(5)
 
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
 
 
-class SquareRootAgent(Agent):
-    class ReceiveMsg(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive()
-            if msg:
-                if debug:
-                    print(f'SquareRootAgent: Mensagem recebida, fazendo raiz quadrada do numero: {msg.body}')
-                resultado = msg.body.split(" ")
-                resultado = math.sqrt(float(resultado[0]))
-                sender = msg.sender
-                msg = Message(to=str(sender))
-                msg.body = str(resultado)
-                await self.send(msg)
-                if debug:
-                    print(f'SquareRootAgent: Resposta enviada, resultado da raiz quadrada: {msg.body}')
-                    time.sleep(5)
+# class DivisionAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'DivisionAgent: Mensagem recebida, fazendo divisao com os numeros: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = float(resultado[0]) / float(resultado[1])
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'DivisionAgent: Resposta enviada, resultado da divisao: {msg.body}')
+#                     time.sleep(5)
 
-    async def setup(self):
-        self.add_behaviour(self.ReceiveMsg())
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
+
+
+# class PowerAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'PowerAgent: Mensagem recebida, fazendo potencia com os numeros: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = float(resultado[0]) ** float(resultado[1])
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'PowerAgent: Resposta enviada, resultado da potencia: {msg.body}')
+#                     time.sleep(5)
+
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
+
+
+# class SquareRootAgent(Agent):
+#     class ReceiveMsg(CyclicBehaviour):
+#         async def run(self):
+#             msg = await self.receive()
+#             if msg:
+#                 if debug:
+#                     print(f'SquareRootAgent: Mensagem recebida, fazendo raiz quadrada do numero: {msg.body}')
+#                 resultado = msg.body.split(" ")
+#                 resultado = math.sqrt(float(resultado[0]))
+#                 sender = msg.sender
+#                 msg = Message(to=str(sender))
+#                 msg.body = str(resultado)
+#                 await self.send(msg)
+#                 if debug:
+#                     print(f'SquareRootAgent: Resposta enviada, resultado da raiz quadrada: {msg.body}')
+#                     time.sleep(5)
+
+#     async def setup(self):
+#         self.add_behaviour(self.ReceiveMsg())
 
 
 class ParenthesisAgent(Agent):
@@ -398,27 +399,27 @@ class CoordinatorAgent(Agent):
 if __name__ == "__main__":
     debug = False
 
-    soma = SumAgent("sum_agent@localhost/5222", "123")
+    soma = AdicaoAgente("sum_agent@localhost/5222", "123")
     future = soma.start()
     future.result()
     # print('Soma inicializado')
-    subtracao = SubtractionAgent("subtract_agent@localhost/5222", "123")
+    subtracao = SubtracaoAgente("subtract_agent@localhost/5222", "123")
     future = subtracao.start()
     future.result()
     # print('Subtracao inicializado')
-    multiplicacao = MultiplicationAgent("multiplication_agent@localhost/5222", "123")
+    multiplicacao = MultiplicacaoAgente("multiplication_agent@localhost/5222", "123")
     future = multiplicacao.start()
     future.result()
     # print('Multiplicacao inicializado')
-    divisao = DivisionAgent("division_agent@localhost/5222", "123")
+    divisao = DivisaoAgente("division_agent@localhost/5222", "123")
     future = divisao.start()
     future.result()
     # print('Divisao inicializado')
-    potencia = PowerAgent("power_agent@localhost/5222", "123")
+    potencia = ExponenciacaoAgente("power_agent@localhost/5222", "123")
     future = potencia.start()
     future.result()
     # print('Potencia inicializado')
-    raiz = SquareRootAgent("squareroot_agent@localhost/5222", "123")
+    raiz = RaizAgent("squareroot_agent@localhost/5222", "123")
     future = raiz.start()
     future.result()
     # print('Raiz inicializado')

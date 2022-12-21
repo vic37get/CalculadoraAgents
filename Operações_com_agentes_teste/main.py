@@ -25,16 +25,21 @@ class MasterAgent(Agent):
             if caractere == ')':
                 fechamento_parenteses.append(index)
         try:
-            #Pegar o parêntese mais interno, para isso o inicial é o mais á direita (da lista de abertura de parenteses) e o final o mais á esquerda (da lista de fechamento de parenteses).
+            # Pegar o parêntese mais interno, para isso o 
+            # inicial é o mais á direita (da lista de abertura de parenteses)
+            # e o final o mais á esquerda (da lista de fechamento de parenteses).
             inicio = max(abertura_parenteses)
             fim = min(fechamento_parenteses)
-            #Se existem parenteses concorrentes. Exemplo: (2+5) - (5-7), o parentese de inicio vai ter indice maior que o de fim.
+            
+            # Se existem parenteses concorrentes. Exemplo: (2+5) - (5-7), o parentese
+            #  de inicio vai ter indice maior que o de fim.
             if inicio > fim:
                 for caractere in range(fim, 0, -1):
                     if expressao[caractere] == '(':
                         inicio = caractere
                         return inicio, fim+1
-            return inicio, fim+1 #Retorna o inicio e o fim da expressao com parênteses, incluindo os parênteses.
+            return inicio, fim+1 #Retorna o inicio e o fim da expressao com parênteses, 
+                                 #incluindo os parênteses.
         except:
             return None, None
 
